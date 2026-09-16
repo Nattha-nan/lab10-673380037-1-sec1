@@ -23,14 +23,17 @@ import reactor.core.publisher.Mono;
  *   .defaultIfEmpty(...)      fallback ถ้าว่าง
  *   .switchIfEmpty(Mono...)   fallback Mono ถ้าว่าง
  */
+
+// ── Service Layer: business logic, ไม่ยุ่งกับ storage โดยตรง ──
 @Service
 public class ProductService {
 
     // ── Constructor Injection (DIP — SOLID) ─────────────
-    private final ProductRepository repository;
+    private final ProductRepository repository; // Dependency Injection (DIP)
 
     public ProductService(ProductRepository repository) {
-        this.repository = repository;
+        // ถ้า repository คืน empty → แปลงเป็น error แทน (business rule)
+        this.repository = repository; 
     }
 
     // ── 1. ดึง Product 1 รายการ ──────────────────────────
@@ -66,7 +69,7 @@ public class ProductService {
     public Mono<Product> save(Product product) {
         // TODO: เติม code ตรงนี้
         if (product.getId() == null) {
-            product.setId(java.util.UUID.randomUUID().toString());
+            product.setId(java.util.UUID.randomUUID().toString()); // generate id ให้อัตโนมัติ
         }
         return repository.save(product);
     }
@@ -99,6 +102,6 @@ public class ProductService {
     public Mono<Double> getDiscountedPrice(String id) {
         // TODO: เติม code ตรงนี้
         return getById(id)
-                .map(Product::getDiscountedPrice);
+                .map(Product::getDiscountedPrice); // แปลง Product → Double โดยไม่ block
     }
 }

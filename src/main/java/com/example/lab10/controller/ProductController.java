@@ -29,6 +29,8 @@ import reactor.core.publisher.Mono;
  *   GET    /products/category/{cat} → Flux<Product> (กรอง)
  *   GET    /products/{id}/price    → Mono<Double>   (ราคาหลังลด)
  */
+
+// ── Controller Layer: รับ HTTP request แล้วส่งต่อให้ Service ──
 @RestController
 @RequestMapping("/products")
 public class ProductController {
@@ -52,7 +54,7 @@ public class ProductController {
      */
     @GetMapping("/{id}")
     public Mono<Product> getById(@PathVariable String id) {
-        return service.getById(id);
+        return service.getById(id); // controller ไม่มี logic เอง แค่ delegate
     }
 
     // ══════════════════════════════════════════════════════
@@ -83,7 +85,7 @@ public class ProductController {
     @PostMapping
     public Mono<Product> save(@RequestBody Product product) {
         // TODO: เติม code ตรงนี้
-        return service.save(product);
+        return service.save(product); // Spring แปลง JSON body → Product object ให้อัตโนมัติ
     }
 
     /**

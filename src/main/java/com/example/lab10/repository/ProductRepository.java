@@ -22,6 +22,8 @@ import reactor.core.publisher.Mono;
  *   - Mono.empty()              คืนเปล่า
  *   - Flux.fromIterable(list)   คืนหลายค่าจาก collection
  */
+
+// ── Repository Layer: จัดการข้อมูลดิบ (CRUD) ──────────────
 public class ProductRepository {
 
     // ── In-memory storage ────────────────────────────────
@@ -49,6 +51,7 @@ public class ProductRepository {
     public Mono<Product> findById(String id) {
         // TODO: เติม code ตรงนี้
         Product product = store.get(id);
+        // ถ้า null ให้คืน Mono.empty() (แทน null โดยตรง — reactive ไม่ใช้ null)
         return product != null ? Mono.just(product) : Mono.empty();
     }
 
@@ -61,6 +64,7 @@ public class ProductRepository {
      */
     public Flux<Product> findAll() {
         // TODO: เติม code ตรงนี้
+        // แปลง Collection ธรรมดาให้กลายเป็น reactive stream
         return Flux.fromIterable(store.values()); // ← แก้บรรทัดนี้
     }
 
@@ -74,7 +78,7 @@ public class ProductRepository {
     public Mono<Product> save(Product product) {
         // TODO: เติม code ตรงนี้
         store.put(product.getId(), product);
-        return Mono.just(product);
+        return Mono.just(product); // ห่อผลลัพธ์กลับเป็น Mono
     }
 
     // ── 4. ลบ Product ────────────────────────────────────
@@ -87,7 +91,7 @@ public class ProductRepository {
     public Mono<Void> deleteById(String id) {
         // TODO: เติม code ตรงนี้
         store.remove(id);
-        return Mono.empty(); // ← แก้บรรทัดนี้
+        return Mono.empty(); // ลบเสร็จ ไม่มีค่าคืน จึงเป็น Mono<Void>
     }
 
     // ── 5. กรองตาม category ──────────────────────────────
@@ -99,6 +103,6 @@ public class ProductRepository {
      */
     public Flux<Product> findByCategory(String category) {
         // TODO: เติม code ตรงนี้
-        return findAll().filter(product -> product.getCategory().equalsIgnoreCase(category));
+        return findAll().filter(product -> product.getCategory().equalsIgnoreCase(category)); // กรองแบบ lazy
     }
 }
