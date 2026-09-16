@@ -191,11 +191,11 @@ src/main/java/com/example/lab10/
 | Method | URL | Return | สถานะ |
 |---|---|---|---|
 | GET | `/products/{id}` | `Mono<Product>` | ✅ ทำแล้ว (ตัวอย่าง) |
-| GET | `/products` | `Flux<Product>` | ❌ TODO |
-| POST | `/products` | `Mono<Product>` | ❌ TODO |
-| DELETE | `/products/{id}` | `Mono<Void>` | ❌ TODO |
-| GET | `/products/category/{cat}` | `Flux<Product>` | ❌ TODO |
-| GET | `/products/{id}/price` | `Mono<Double>` | ❌ TODO |
+| GET | `/products` | `Flux<Product>` | ✅ ทำแล้ว |
+| POST | `/products` | `Mono<Product>` | ✅ ทำแล้ว |
+| DELETE | `/products/{id}` | `Mono<Void>` | ✅ ทำแล้ว |
+| GET | `/products/category/{cat}` | `Flux<Product>` | ✅ ทำแล้ว |
+| GET | `/products/{id}/price` | `Mono<Double>` | ✅ ทำแล้ว |
 
 ---
 
@@ -218,10 +218,10 @@ mvn spring-boot:run
 
 ## 📝 สิ่งที่ต้องส่ง
 
-- [ ] **GitHub Repository** — ชื่อ `lab10-{รหัสนักศึกษา}-sec{section}` พร้อม commit history
-- [ ] **Code ครบทุก TODO** — Repository, Service, Controller, WebClient
-- [ ] **ผลลัพธ์ใน response มีชื่อและรหัสนักศึกษา** (ใน Product name ที่ seed ไว้)
-- [ ] **Screenshot** ทดสอบทุก endpoint ผ่าน Browser หรือ Postman
+- [✅] **GitHub Repository** — ชื่อ `lab10-{รหัสนักศึกษา}-sec{section}` พร้อม commit history
+- [✅] **Code ครบทุก TODO** — Repository, Service, Controller, WebClient
+- [✅] **ผลลัพธ์ใน response มีชื่อและรหัสนักศึกษา** (ใน Product name ที่ seed ไว้)
+- [✅] **Screenshot** ทดสอบทุก endpoint ผ่าน Browser หรือ Postman
 - [ ] **ไฟล์ PDF** ชื่อ `Lab10_xxxxSec#.pdf`
 
 **PDF ต้องอธิบาย:**
