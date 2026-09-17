@@ -29,13 +29,13 @@ import reactor.core.publisher.Mono;
  *   GET    /products/category/{cat} → Flux<Product> (กรอง)
  *   GET    /products/{id}/price    → Mono<Double>   (ราคาหลังลด)
  */
-
-// ── Controller Layer: รับ HTTP request แล้วส่งต่อให้ Service ──
 @RestController
 @RequestMapping("/products")
 public class ProductController {
 
     // ── Constructor Injection (DIP — SOLID) ─────────────
+    // Controller ไม่รู้จัก ProductRepository เลย รู้จักแค่ ProductService
+    // ทำให้ HTTP layer แยกขาดจาก storage layer อย่างชัดเจน
     private final ProductService service;
 
     public ProductController(ProductService service) {
@@ -54,7 +54,9 @@ public class ProductController {
      */
     @GetMapping("/{id}")
     public Mono<Product> getById(@PathVariable String id) {
-        return service.getById(id); // controller ไม่มี logic เอง แค่ delegate
+        // Controller ไม่มี logic เอง แค่ "ส่งต่อ" (delegate) ให้ Service ทำงาน
+        // Spring WebFlux เป็นคนจัดการ subscribe ให้อัตโนมัติเมื่อคืน Mono/Flux กลับไป
+        return service.getById(id);
     }
 
     // ══════════════════════════════════════════════════════
@@ -70,7 +72,6 @@ public class ProductController {
      */
     @GetMapping
     public Flux<Product> getAll() {
-        // TODO: เติม code ตรงนี้
         return service.getAll();
     }
 
@@ -84,8 +85,9 @@ public class ProductController {
      */
     @PostMapping
     public Mono<Product> save(@RequestBody Product product) {
-        // TODO: เติม code ตรงนี้
-        return service.save(product); // Spring แปลง JSON body → Product object ให้อัตโนมัติ
+        // @RequestBody บอก Spring ให้ deserialize JSON body ที่ส่งมา
+        // เป็น Product object ให้อัตโนมัติ ก่อนส่งเข้า method นี้
+        return service.save(product);
     }
 
     /**
@@ -97,7 +99,7 @@ public class ProductController {
      */
     @DeleteMapping("/{id}")
     public Mono<Void> delete(@PathVariable String id) {
-        // TODO: เติม code ตรงนี้
+        // คืน Mono<Void> จึง response body จะว่างเปล่าเมื่อทดสอบผ่าน Postman
         return service.delete(id);
     }
 
@@ -110,7 +112,6 @@ public class ProductController {
      */
     @GetMapping("/category/{category}")
     public Flux<Product> getByCategory(@PathVariable String category) {
-        // TODO: เติม code ตรงนี้
         return service.getByCategory(category);
     }
 
@@ -123,7 +124,8 @@ public class ProductController {
      */
     @GetMapping("/{id}/price")
     public Mono<Double> getDiscountedPrice(@PathVariable String id) {
-        // TODO: เติม code ตรงนี้
+        // ผลลัพธ์ที่ Postman เห็นจะเป็นตัวเลขเดี่ยว (เช่น 35910.0) ไม่ใช่ JSON object
+        // เพราะ Mono<Double> ถูก serialize เป็น JSON primitive โดยตรง
         return service.getDiscountedPrice(id);
     }
 }

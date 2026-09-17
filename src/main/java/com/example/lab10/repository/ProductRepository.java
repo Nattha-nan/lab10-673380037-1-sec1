@@ -22,11 +22,11 @@ import reactor.core.publisher.Mono;
  *   - Mono.empty()              คืนเปล่า
  *   - Flux.fromIterable(list)   คืนหลายค่าจาก collection
  */
-
-// ── Repository Layer: จัดการข้อมูลดิบ (CRUD) ──────────────
 public class ProductRepository {
 
     // ── In-memory storage ────────────────────────────────
+    // ConcurrentHashMap ปลอดภัยกับ multi-thread โดยไม่ต้อง synchronized เอง
+    // สำคัญในบริบท reactive ที่หลาย request อาจถูกประมวลผลพร้อมกันบน event loop
     private final Map<String, Product> store = new ConcurrentHashMap<>();
 
     // ── Constructor: ใส่ข้อมูลตัวอย่าง ──────────────────
@@ -49,9 +49,12 @@ public class ProductRepository {
      *       ถ้ามีค่าให้ใช้ Mono.just(product)
      */
     public Mono<Product> findById(String id) {
-        // TODO: เติม code ตรงนี้
+        // store.get(id) เป็นการอ่านค่าแบบ synchronous ธรรมดา (ไม่มี I/O จริง
+        // เพราะเป็น in-memory map) จึงไม่ต้อง wrap เป็น async ตั้งแต่ก่อนเรียก
         Product product = store.get(id);
-        // ถ้า null ให้คืน Mono.empty() (แทน null โดยตรง — reactive ไม่ใช้ null)
+
+        // กฎเหล็กของ Reactive Streams: ห้ามส่ง null เข้า Mono.just() เด็ดขาด
+        // (Mono.just(null) จะ throw NullPointerException ทันที ไม่ใช่ตอน subscribe)
         return product != null ? Mono.just(product) : Mono.empty();
     }
 
@@ -63,9 +66,10 @@ public class ProductRepository {
      *       ใช้ Flux.fromIterable(...) แปลงเป็น Flux
      */
     public Flux<Product> findAll() {
-        // TODO: เติม code ตรงนี้
-        // แปลง Collection ธรรมดาให้กลายเป็น reactive stream
-        return Flux.fromIterable(store.values()); // ← แก้บรรทัดนี้
+        // store.values() คืน Collection<Product> ที่มีอยู่แล้วในหน่วยความจำทั้งหมด
+        // Flux.fromIterable(...) เป็นแค่ตัว "ห่อ" (adapter) ให้ collection ธรรมดา
+        // กลายเป็น reactive stream เพื่อให้ layer อื่นเชื่อม operator ต่อได้
+        return Flux.fromIterable(store.values());
     }
 
     // ── 3. บันทึก Product ────────────────────────────────
@@ -76,9 +80,12 @@ public class ProductRepository {
      *       แล้วใช้ Mono.just(product) คืนค่า
      */
     public Mono<Product> save(Product product) {
-        // TODO: เติม code ตรงนี้
+        // store.put(...) คือ side effect ที่เกิดขึ้นทันทีตอน method ถูกเรียก
+        // (ต่างจาก operator ปกติของ Reactor ที่มักจะ lazy รอ subscribe ก่อน)
         store.put(product.getId(), product);
-        return Mono.just(product); // ห่อผลลัพธ์กลับเป็น Mono
+
+        // ห่อผลลัพธ์สุดท้ายด้วย Mono.just(...) เพื่อคืนกลับไปให้ layer บนใช้ต่อ
+        return Mono.just(product);
     }
 
     // ── 4. ลบ Product ────────────────────────────────────
@@ -89,9 +96,12 @@ public class ProductRepository {
      *       แล้วใช้ Mono.empty() คืนค่า (Mono<Void>)
      */
     public Mono<Void> deleteById(String id) {
-        // TODO: เติม code ตรงนี้
+        // ลบออกจาก map จริง ๆ ทันที (ถ้า id ไม่มีอยู่ก็แค่ไม่มีอะไรเกิดขึ้น ไม่ error)
         store.remove(id);
-        return Mono.empty(); // ลบเสร็จ ไม่มีค่าคืน จึงเป็น Mono<Void>
+
+        // Mono<Void> สื่อว่า "งานเสร็จแล้ว แต่ไม่มี payload จะคืน"
+        // Mono.empty() ในบริบทนี้ไม่ได้แปลว่า "หาไม่เจอ" เหมือนใน findById()
+        return Mono.empty();
     }
 
     // ── 5. กรองตาม category ──────────────────────────────
@@ -102,7 +112,11 @@ public class ProductRepository {
      *       .filter(p -> p.getCategory().equalsIgnoreCase(category))
      */
     public Flux<Product> findByCategory(String category) {
-        // TODO: เติม code ตรงนี้
-        return findAll().filter(product -> product.getCategory().equalsIgnoreCase(category)); // กรองแบบ lazy
+        // เรียกใช้ findAll() ซ้ำ แทนที่จะเขียน logic ดึงข้อมูลใหม่ทั้งหมด
+        // เป็นการ "ต่อยอด" (compose) จาก stream ที่มีอยู่แล้ว
+        return findAll().filter(p -> p.getCategory().equalsIgnoreCase(category));
+        /* .filter(...) เป็น operator แบบ lazy จริง ๆ จะยังไม่ execute
+         จนกว่าจะมีคน subscribe (ตอน Controller คืนค่ากลับไปให้ Spring)*/
+                
     }
 }
