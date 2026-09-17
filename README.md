@@ -177,13 +177,13 @@ src/main/java/com/example/lab10/
 ├── model/
 │   └── Product.java               ← ✅ มีให้แล้ว 
 ├── repository/
-│   └── ProductRepository.java     ← ❌ TODO: เติม method body (5 methods)
+│   └── ProductRepository.java     ← ✅ TODO: เติม method body (5 methods)
 ├── service/
-│   └── ProductService.java        ← ❌ TODO: เติม method body (6 methods)
+│   └── ProductService.java        ← ✅ TODO: เติม method body (6 methods)
 ├── controller/
-│   └── ProductController.java     ← ✅ getById ทำแล้ว / ❌ TODO: อีก 5 endpoints
+│   └── ProductController.java     ← ✅ getById ทำแล้ว / ✅ TODO: อีก 5 endpoints
 └── client/
-    └── ProductWebClient.java      ← ✅ getProductById ทำแล้ว / ❌ TODO: อีก 5 methods
+    └── ProductWebClient.java      ← ✅ getProductById ทำแล้ว / ✅ TODO: อีก 5 methods
 ```
 
 **Endpoints ที่ต้องทำให้ครบ:**
