@@ -221,8 +221,8 @@ mvn spring-boot:run
 - ✅ **GitHub Repository** — ชื่อ `lab10-{รหัสนักศึกษา}-sec{section}` พร้อม commit history
 - ✅ **Code ครบทุก TODO** — Repository, Service, Controller, WebClient
 - ✅ **ผลลัพธ์ใน response มีชื่อและรหัสนักศึกษา** (ใน Product name ที่ seed ไว้)
-- ✅ **Screenshot** ทดสอบทุก endpoint ผ่าน Browser หรือ Postman
-- [ ] **ไฟล์ PDF** ชื่อ `Lab10_xxxxSec#.pdf`
+- ✅ **Screenshot** ทดสอบทุก endpoint ผ่าน Browser หรือ Postman [Screenshot](Screenshot)
+- ✅ **ไฟล์ PDF** ชื่อ [Lab10_673380037-1Sec1.pdf](Lab10_673380037-1Sec1.pdf)
 
 **PDF ต้องอธิบาย:**
 1. Reactive Programming vs Blocking — ต่างกันอย่างไร
